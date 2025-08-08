@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Pemesanan Makanan</title>
+    <style>
+        body { font-family: sans-serif; margin: 0; padding: 20px; background-color: #f4f4f9; }
+        .container { max-width: 800px; margin: auto; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        h1, h2 { color: #333; }
+        .navbar a { margin-right: 15px; text-decoration: none; color: #007bff; }
+        .navbar a:hover { text-decoration: underline; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background-color: #007bff; color: white; }
+        tr:nth-child(even) { background-color: #f2f2f2; }
+        .success { color: green; }
+        .error { color: red; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="navbar">
+            <a href="/">Dashboard</a>
+            <a href="/pesan">Pemesanan</a>
+            <a href="/riwayat">Riwayat Pesanan</a>
+        </div>
+        <hr>
+        <h1>Pemesanan</h1>
+        <h2 id="order-message" class="success" style="display:none;"></h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Nama Makanan</th>
+                    <th>Harga</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{range .}}
+                <tr>
+                    <td>{{.Name}}</td>
+                    <td>Rp. {{.Price}}</td>
+                    <td>
+                        <button onclick="placeOrder({{.ID}})">Pesan Sekarang</button>
+                    </td>
+                </tr>
+                {{end}}
+            </tbody>
+        </table>
+    
+        <script>
+            async function placeOrder(foodId) {
+                const orderMessage = document.getElementById('order-message');
+                const response = await fetch('/api/orders', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ food_id: foodId, quantity: 1 })
+                });
+    
+                const result = await response.json();
+                orderMessage.innerText = result.message;
+                orderMessage.style.display = 'block';
+    
+                setTimeout(() => { orderMessage.style.display = 'none'; }, 3000);
+            }
+        </script>
+    </div>
+</body>
+</html>
